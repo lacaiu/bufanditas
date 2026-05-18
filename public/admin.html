@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#FAF7F2" />
+<title>Admin · Stock de colores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #FAF7F2; color: #2A2722; font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+  body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  .app { max-width: 720px; margin: 0 auto; padding: 24px 16px 40px; }
+  h1 { font-size: 22px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .subtitle { color: #7A746C; margin: 0 0 22px; font-size: 13px; }
+
+  .login-card {
+    background: #FFFFFF; border-radius: 14px; padding: 22px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+    max-width: 380px; margin: 40px auto 0;
+  }
+  .login-card h2 { margin: 0 0 16px; font-size: 18px; font-weight: 600; }
+  .login-card input {
+    width: 100%; padding: 12px 14px; border-radius: 10px;
+    border: 1.5px solid #E8E2D7; font-family: inherit; font-size: 15px;
+    margin-bottom: 12px; -webkit-appearance: none; appearance: none;
+  }
+  .login-card input:focus { outline: none; border-color: #2A2722; }
+  .login-card .error { color: #B30214; font-size: 13px; margin-top: -6px; margin-bottom: 12px; }
+
+  .toolbar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 18px; align-items: center;
+  }
+  .toolbar .status { font-size: 13px; color: #7A746C; margin-left: auto; }
+  .toolbar .status .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; vertical-align: 1px; margin-right: 5px; background: #999; }
+  .toolbar .status .dot.saved { background: #2A8C2A; }
+  .toolbar .status .dot.dirty { background: #C9651E; }
+  .toolbar .status .dot.error { background: #B30214; }
+
+  button.btn {
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    padding: 11px 16px; border-radius: 10px;
+    border: 1.5px solid #E8E2D7; background: #FFFFFF; color: #2A2722;
+    cursor: pointer; -webkit-appearance: none; appearance: none;
+  }
+  button.btn:hover { background: #F4EFE4; }
+  button.btn.primary { background: #2A2722; color: #FFFFFF; border-color: #2A2722; }
+  button.btn.primary:hover { background: #1A1815; }
+  button.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .color-card {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px; background: #FFFFFF; border: 1.5px solid #EEE9E1;
+    border-radius: 12px; cursor: pointer; transition: all 0.15s ease;
+    user-select: none;
+  }
+  .color-card:hover { border-color: #C8C0B0; }
+  .color-card .swatch {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1.5px solid rgba(0,0,0,0.08); flex-shrink: 0;
+    position: relative;
+  }
+  .color-card.out .swatch::before {
+    content: ''; position: absolute; top: 50%; left: -3px; right: -3px;
+    height: 2px; background: rgba(0,0,0,0.8); transform: rotate(-45deg);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.7);
+  }
+  .color-card.out { background: #F4EFE4; opacity: 0.85; }
+  .color-card.out .swatch { filter: grayscale(0.35); opacity: 0.6; }
+  .color-card .info { min-width: 0; flex: 1; }
+  .color-card .name { font-size: 13px; font-weight: 600; color: #2A2722; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .color-card .code { font-size: 11px; color: #A8A29A; font-variant-numeric: tabular-nums; }
+
+  .summary-bar {
+    margin-top: 22px; padding: 14px 16px; background: #FFFFFF;
+    border-radius: 12px; border: 1px solid #EEE9E1;
+    font-size: 13px; color: #5A544D;
+  }
+  .summary-bar strong { color: #2A2722; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- LOGIN -->
+  <div id="login-screen">
+    <h1>Admin · Stock</h1>
+    <p class="subtitle">Acceso restringido</p>
+    <div class="login-card">
+      <h2>Ingresá tu clave</h2>
+      <input id="password" type="password" placeholder="Clave" autocomplete="current-password" />
+      <div id="login-error" class="error" style="display:none;">Clave incorrecta</div>
+      <button class="btn primary" id="login-btn" style="width:100%;">Ingresar</button>
+    </div>
+  </div>
+
+  <!-- PANEL -->
+  <div id="panel-screen" style="display:none;">
+    <h1>Stock de colores</h1>
+    <p class="subtitle">Tocá un color para marcarlo como "sin stock". Los cambios se guardan automáticamente.</p>
+
+    <div class="toolbar">
+      <button class="btn" type="button" id="mark-all-in">Todos disponibles</button>
+      <button class="btn" type="button" id="reload">Recargar desde servidor</button>
+      <button class="btn" type="button" id="logout">Cerrar sesión</button>
+      <div class="status" id="status"><span class="dot saved"></span><span id="status-text">Guardado</span></div>
+    </div>
+
+    <div class="grid" id="color-grid"></div>
+
+    <div class="summary-bar">
+      <strong id="oos-count">0</strong> colores sin stock · <strong id="in-count">0</strong> disponibles
+    </div>
+  </div>
+
+</div>
+
+<script src="colors.js"></script>
+<script>
+(function() {
+  const API_BASE = '';
+  const COLORS = window.COLORS;
+  const colorKey = window.colorKey;
+
+  // ----- Auth simple -----
+  // La verificación real ocurre en el backend. Acá solo guardamos un token de sesión.
+  function getToken() { return sessionStorage.getItem('admin_token') || ''; }
+  function setToken(t) { sessionStorage.setItem('admin_token', t); }
+  function clearToken() { sessionStorage.removeItem('admin_token'); }
+
+  async function tryLogin(password) {
+    try {
+      const res = await fetch(API_BASE + '/api/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      if (data.token) { setToken(data.token); return true; }
+      return false;
+    } catch (e) {
+      // Modo offline (sin backend): permitir si hay un fallback configurado
+      // En producción real, esto no aplica porque siempre hay backend.
+      return false;
+    }
+  }
+
+  const state = { outOfStock: new Set() };
+  let saveTimer = null;
+
+  function setStatus(kind, text) {
+    document.getElementById('status').innerHTML = `<span class="dot ${kind}"></span><span id="status-text">${text}</span>`;
+  }
+
+  async function loadStock() {
+    try {
+      const res = await fetch(API_BASE + '/api/stock');
+      if (res.ok) {
+        const data = await res.json();
+        state.outOfStock = new Set(data.outOfStock || []);
+        setStatus('saved', 'Sincronizado');
+        return;
+      }
+    } catch (e) {}
+    setStatus('error', 'Sin conexión');
+  }
+
+  async function saveStock() {
+    setStatus('dirty', 'Guardando...');
+    try {
+      const res = await fetch(API_BASE + '/api/stock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': getToken() },
+        body: JSON.stringify({ outOfStock: Array.from(state.outOfStock) }),
+      });
+      if (res.status === 401) { clearToken(); showLogin(); return; }
+      if (!res.ok) throw new Error('save failed');
+      setStatus('saved', 'Guardado');
+    } catch (e) {
+      setStatus('error', 'Error al guardar');
+    }
+  }
+
+  function scheduleSave() {
+    setStatus('dirty', 'Guardando...');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveStock, 500);
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('color-grid');
+    grid.innerHTML = '';
+    let oos = 0;
+    COLORS.forEach((c, i) => {
+      const card = document.createElement('div');
+      card.className = 'color-card';
+      const out = state.outOfStock.has(colorKey(c));
+      if (out) { card.classList.add('out'); oos++; }
+      card.innerHTML = `
+        <div class="swatch" style="background:${c.hex};"></div>
+        <div class="info">
+          <div class="name">${c.name}</div>
+          <div class="code">${c.code || '—'}</div>
+        </div>
+      `;
+      card.addEventListener('click', () => {
+        const k = colorKey(c);
+        if (state.outOfStock.has(k)) state.outOfStock.delete(k);
+        else state.outOfStock.add(k);
+        renderGrid();
+        scheduleSave();
+      });
+      grid.appendChild(card);
+    });
+    document.getElementById('oos-count').textContent = oos;
+    document.getElementById('in-count').textContent = COLORS.length - oos;
+  }
+
+  function showLogin() {
+    document.getElementById('login-screen').style.display = '';
+    document.getElementById('panel-screen').style.display = 'none';
+  }
+  function showPanel() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('panel-screen').style.display = '';
+    loadStock().then(renderGrid);
+  }
+
+  // Login
+  document.getElementById('login-btn').addEventListener('click', async () => {
+    const pwd = document.getElementById('password').value;
+    const ok = await tryLogin(pwd);
+    if (ok) { document.getElementById('login-error').style.display = 'none'; showPanel(); }
+    else { document.getElementById('login-error').style.display = ''; }
+  });
+  document.getElementById('password').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('login-btn').click();
+  });
+
+  // Botones del panel
+  document.getElementById('mark-all-in').addEventListener('click', () => {
+    if (!confirm('¿Marcar todos los colores como disponibles?')) return;
+    state.outOfStock.clear();
+    renderGrid();
+    scheduleSave();
+  });
+  document.getElementById('reload').addEventListener('click', () => { loadStock().then(renderGrid); });
+  document.getElementById('logout').addEventListener('click', () => { clearToken(); showLogin(); });
+
+  // Inicio
+  if (getToken()) showPanel(); else showLogin();
+})();
+</script>
+</body>
+</html>
