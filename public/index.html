@@ -29,7 +29,26 @@
     background: #FFFFFF; border-radius: 18px;
     padding: 16px 14px 14px; margin-bottom: 22px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+    position: sticky;
+    top: 8px;
+    z-index: 50;
+    transition: padding 0.2s ease, box-shadow 0.2s ease, border-radius 0.2s ease;
   }
+  .render-card.compact {
+    padding: 8px 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06), 0 6px 18px rgba(0,0,0,0.08);
+  }
+  .render-card.compact .scarf-stage { min-height: 38px; margin-bottom: 0; }
+  .render-card.compact #scarf-svg { max-height: 32px; }
+  .render-card.compact .ruler { display: none; }
+  .render-card.compact .price-bar {
+    margin-top: 8px; padding-top: 8px;
+    border-top: 1px solid #EEE9E1;
+  }
+  .render-card.compact #price-readout { font-size: 22px; }
+  .render-card.compact #price-detail { display: none; }
+  .render-card.compact .price-label { display: none; }
+  .render-card.compact .surprise-btn { padding: 7px 12px !important; font-size: 12px !important; }
   .scarf-stage { display: flex; justify-content: center; align-items: center; min-height: 90px; margin-bottom: 6px; }
   #scarf-svg { width: 100%; height: auto; filter: blur(0.4px); border-radius: 4px; }
   .ruler { display: flex; justify-content: space-between; font-size: 10px; color: #A8A29A; margin-top: 4px; padding: 0 2px; font-weight: 500; letter-spacing: 0.02em; }
@@ -52,6 +71,70 @@
   .section-head label { font-size: 14px; font-weight: 600; letter-spacing: -0.005em; }
   .section-head .meta { font-size: 12px; color: #7A746C; font-weight: 500; text-align: right; flex-shrink: 0; }
   .hint { font-size: 12px; color: #A8A29A; margin: 0 0 10px; line-height: 1.4; }
+
+  /* Sections colapsables */
+  section.collapsible .section-head {
+    cursor: pointer;
+    user-select: none;
+    padding: 12px 14px;
+    background: #FFFFFF;
+    border: 1px solid #EEE9E1;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    transition: background 0.15s ease;
+  }
+  section.collapsible .section-head:hover { background: #FAF7F2; }
+  section.collapsible .section-head label { cursor: pointer; }
+  .chevron {
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    transition: transform 0.25s ease;
+    color: #7A746C;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  section.collapsible.collapsed .chevron { transform: rotate(-90deg); }
+  section.collapsible .collapsible-body {
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease;
+    max-height: 2000px;
+    opacity: 1;
+  }
+  section.collapsible.collapsed .collapsible-body {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+  }
+  /* Preview compacto de selección en el header colapsado */
+  .selection-preview {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  section.collapsible.collapsed .selection-preview { display: inline-flex; }
+  section.collapsible.collapsed .meta { display: none; }
+  .preview-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .preview-dot.more {
+    background: #F4EFE4;
+    color: #5A544D;
+    font-size: 10px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-color: #E8E2D7;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
   .palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 9px; }
   .swatch {
@@ -288,21 +371,33 @@
     </div>
   </div>
 
-  <section>
-    <div class="section-head">
+  <section class="collapsible" id="section-base">
+    <div class="section-head" data-toggle="section-base">
       <label>Color base</label>
-      <span class="meta" id="base-name"></span>
+      <div class="header-right">
+        <span class="meta" id="base-name"></span>
+        <span class="selection-preview" id="base-preview"></span>
+        <span class="chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </div>
     </div>
-    <div id="base-palette" class="palette"></div>
+    <div class="collapsible-body">
+      <div id="base-palette" class="palette"></div>
+    </div>
   </section>
 
-  <section>
-    <div class="section-head">
+  <section class="collapsible" id="section-stripes">
+    <div class="section-head" data-toggle="section-stripes">
       <label>Colores para franjas</label>
-      <span class="meta"><span id="stripe-count">0</span> elegidos</span>
+      <div class="header-right">
+        <span class="meta"><span id="stripe-count">0</span> elegidos</span>
+        <span class="selection-preview" id="stripe-preview"></span>
+        <span class="chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </div>
     </div>
-    <p class="hint">Tocá para sumar o quitar. Si no elegís ninguno, la bufanda queda lisa. Los tachados están sin stock.</p>
-    <div id="stripe-palette" class="palette"></div>
+    <div class="collapsible-body">
+      <p class="hint">Tocá para sumar o quitar. Si no elegís ninguno, la bufanda queda lisa. Los tachados están sin stock.</p>
+      <div id="stripe-palette" class="palette"></div>
+    </div>
   </section>
 
   <section>
@@ -556,10 +651,12 @@
       container.appendChild(btn);
     });
     document.getElementById('stripe-count').textContent = state.stripes.length;
+    updateStripePreview();
   }
 
   function updateBaseName() {
     document.getElementById('base-name').textContent = publicName(COLORS[state.baseIdx]);
+    updateBasePreview();
   }
 
   // ----- ARMADO DE FRANJAS -----
@@ -635,14 +732,6 @@
     });
     html += `<rect x="0" y="0" width="${SVG_W}" height="3" fill="rgba(255,255,255,0.18)" />`;
     html += `<rect x="0" y="${SVG_H-3}" width="${SVG_W}" height="3" fill="rgba(0,0,0,0.12)" />`;
-    const fringeCount = 14;
-    for (let i = 0; i < fringeCount; i++) {
-      const fy = (i / fringeCount) * SVG_H;
-      const fh = SVG_H / fringeCount * 0.8;
-      const cl = stripes[0].colorIdx, cr = stripes[stripes.length-1].colorIdx;
-      html += `<rect x="-6" y="${fy}" width="6" height="${fh}" fill="${COLORS[cl].hex}" opacity="0.85" />`;
-      html += `<rect x="${SVG_W}" y="${fy}" width="6" height="${fh}" fill="${COLORS[cr].hex}" opacity="0.85" />`;
-    }
     svg.innerHTML = html;
   }
 
@@ -772,12 +861,20 @@
 
     try {
       const design = buildDesignPayload();
+      // Generar imagen del preview para que te llegue al email
+      let previewImage = null;
+      try {
+        previewImage = await renderScarfToPNG();
+      } catch (e) {
+        console.warn('No se pudo generar el preview:', e);
+      }
       const res = await fetch(API_BASE + '/api/create-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           buyer: { name, email, phone, notes },
           design: design,
+          previewImage: previewImage,
         }),
       });
       if (!res.ok) throw new Error('Backend error ' + res.status);
@@ -791,6 +888,49 @@
       console.error(err);
       showInfo('No pudimos generar el link', 'Hubo un problema al conectar con Mercado Pago. Por favor escribinos por WhatsApp con el detalle de tu diseño y te ayudamos a completar el pago.');
     }
+  }
+
+  // ----- SVG → PNG (para mandar el preview al vendedor) -----
+  async function renderScarfToPNG() {
+    // Tamaño optimizado para email: 600px ancho, JPEG comprimido.
+    const W = 600, H = 100;
+    const SCARF_LENGTH_CM = 200;
+    const stripes = buildStripes();
+
+    let svgContent = '';
+    svgContent += `<rect x="0" y="0" width="${W}" height="${H}" fill="${COLORS[state.baseIdx].hex}"/>`;
+    stripes.forEach(s => {
+      const x = (s.fromCm / SCARF_LENGTH_CM) * W;
+      const w = ((s.toCm - s.fromCm) / SCARF_LENGTH_CM) * W;
+      svgContent += `<rect x="${x.toFixed(2)}" y="0" width="${w.toFixed(2)}" height="${H}" fill="${COLORS[s.colorIdx].hex}"/>`;
+    });
+    svgContent += `<rect x="0" y="0" width="${W}" height="5" fill="rgba(255,255,255,0.22)"/>`;
+    svgContent += `<rect x="0" y="${H-5}" width="${W}" height="5" fill="rgba(0,0,0,0.14)"/>`;
+
+    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${svgContent}</svg>`;
+
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = W;
+        canvas.height = H;
+        const ctx = canvas.getContext('2d');
+        // Fondo blanco (para JPEG, que no soporta transparencia)
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, W, H);
+        ctx.filter = 'blur(0.8px)';
+        ctx.drawImage(img, 0, 0, W, H);
+        URL.revokeObjectURL(url);
+        // JPEG calidad 0.85 → archivo chico, calidad suficiente para email
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        resolve(dataUrl);
+      };
+      img.onerror = (e) => { URL.revokeObjectURL(url); reject(e); };
+      img.src = url;
+    });
   }
 
   // ----- EVENTOS -----
@@ -828,6 +968,54 @@
     showInfo(m[0], m[1]);
     // limpiar la URL
     window.history.replaceState({}, '', window.location.pathname);
+  }
+
+  // ----- COLAPSAR SECCIONES -----
+  function setupCollapsibles() {
+    document.querySelectorAll('section.collapsible .section-head').forEach(head => {
+      head.addEventListener('click', () => {
+        const sec = head.closest('section.collapsible');
+        sec.classList.toggle('collapsed');
+      });
+    });
+  }
+
+  function updateBasePreview() {
+    const el = document.getElementById('base-preview');
+    if (!el) return;
+    el.innerHTML = `<span class="preview-dot" style="background:${COLORS[state.baseIdx].hex};"></span>`;
+  }
+  function updateStripePreview() {
+    const el = document.getElementById('stripe-preview');
+    if (!el) return;
+    const shown = state.stripes.slice(0, 4);
+    let html = shown.map(i => `<span class="preview-dot" style="background:${COLORS[i].hex};"></span>`).join('');
+    if (state.stripes.length > 4) {
+      html += `<span class="preview-dot more">+${state.stripes.length - 4}</span>`;
+    }
+    if (state.stripes.length === 0) {
+      html = '<span class="meta" style="display:inline;">ninguno</span>';
+    }
+    el.innerHTML = html;
+  }
+
+  // ----- RENDER-CARD COMPACTO AL SCROLLEAR -----
+  function setupStickyCard() {
+    const card = document.querySelector('.render-card');
+    if (!card) return;
+    // Detectar cuando el card "toca" el techo y aplicar modo compacto
+    let lastState = false;
+    const onScroll = () => {
+      // El card está pegado cuando su rect.top está cerca del top: 8 que definimos en CSS
+      const rect = card.getBoundingClientRect();
+      const isStuck = rect.top <= 12 && window.scrollY > 20;
+      if (isStuck !== lastState) {
+        card.classList.toggle('compact', isStuck);
+        lastState = isStuck;
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
   }
 
   // ----- CARRUSEL -----
@@ -899,6 +1087,8 @@
   loadStock().then(() => {
     randomize();
     setupCarousel();
+    setupCollapsibles();
+    setupStickyCard();
   });
 })();
 </script>
