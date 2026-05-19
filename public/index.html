@@ -30,9 +30,9 @@
     padding: 16px 14px 14px; margin-bottom: 22px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
     position: sticky;
-    top: 8px;
+    top: max(8px, calc(env(safe-area-inset-top) + 8px));
     z-index: 50;
-    transition: padding 0.2s ease, box-shadow 0.2s ease, border-radius 0.2s ease;
+    transition: box-shadow 0.2s ease, border-radius 0.2s ease;
   }
   .render-card.compact {
     padding: 8px 10px;
@@ -999,24 +999,9 @@
     el.innerHTML = html;
   }
 
-  // ----- RENDER-CARD COMPACTO AL SCROLLEAR -----
-  function setupStickyCard() {
-    const card = document.querySelector('.render-card');
-    if (!card) return;
-    // Detectar cuando el card "toca" el techo y aplicar modo compacto
-    let lastState = false;
-    const onScroll = () => {
-      // El card está pegado cuando su rect.top está cerca del top: 8 que definimos en CSS
-      const rect = card.getBoundingClientRect();
-      const isStuck = rect.top <= 12 && window.scrollY > 20;
-      if (isStuck !== lastState) {
-        card.classList.toggle('compact', isStuck);
-        lastState = isStuck;
-      }
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-  }
+  // ----- RENDER-CARD STICKY ESTABLE -----
+  // El comportamiento sticky queda manejado solo por CSS.
+  // No se compacta con JavaScript para evitar saltos al scrollear en mobile.
 
   // ----- CARRUSEL -----
   function setupCarousel() {
@@ -1088,7 +1073,6 @@
     randomize();
     setupCarousel();
     setupCollapsibles();
-    setupStickyCard();
   });
 })();
 </script>
