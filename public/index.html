@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#FAF7F2" />
+<title>La Caiu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body {
+  margin:0; padding:0;
+  background:#FAF7F2; color:#2A2722;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  min-height:100dvh;
+}
+body {
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:100dvh;
+}
+
+.page {
+  width:100%; max-width:420px;
+  padding:32px 20px 48px;
+  display:flex; flex-direction:column; align-items:center;
+  gap:0;
+}
+
+/* Header */
+.brand {
+  text-align:center;
+  margin-bottom:48px;
+}
+.brand h1 {
+  font-size:42px;
+  font-weight:700;
+  letter-spacing:-0.04em;
+  margin:0 0 6px;
+  color:#2A2722;
+}
+.brand .tagline {
+  font-size:14px;
+  color:#A8A29A;
+  font-style:italic;
+  font-weight:400;
+  margin:0;
+  letter-spacing:0.01em;
+}
+
+/* Cards de productos */
+.products {
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  width:100%;
+}
+
+.product-card {
+  display:block;
+  text-decoration:none;
+  background:#FFFFFF;
+  border-radius:20px;
+  padding:24px 22px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.05);
+  transition:transform 0.18s ease, box-shadow 0.18s ease;
+  border:1px solid rgba(0,0,0,0.04);
+  position:relative;
+  overflow:hidden;
+}
+.product-card:active {
+  transform:scale(0.98);
+  box-shadow:0 1px 2px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* Franja de color decorativa al costado */
+.product-card::before {
+  content:'';
+  position:absolute;
+  left:0; top:0; bottom:0;
+  width:5px;
+  border-radius:20px 0 0 20px;
+}
+.card-bufanda::before { background:linear-gradient(180deg,#86BCC9 0%,#5C3A20 35%,#F60582 65%,#86BCC9 100%); }
+.card-sweater::before { background:linear-gradient(180deg,#D93E03 0%,#5C3A20 30%,#86BCC9 60%,#F60582 100%); }
+
+.card-inner {
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+
+/* Render mini del producto */
+.card-render {
+  flex-shrink:0;
+  width:72px;
+  height:72px;
+  border-radius:12px;
+  overflow:hidden;
+  background:#F4EFE4;
+}
+.card-render svg {
+  width:100%;
+  height:100%;
+}
+
+.card-text { flex:1; }
+.card-text h2 {
+  font-size:18px;
+  font-weight:700;
+  margin:0 0 4px;
+  letter-spacing:-0.02em;
+  color:#2A2722;
+}
+.card-text p {
+  font-size:13px;
+  color:#7A746C;
+  margin:0;
+  line-height:1.4;
+}
+.card-arrow {
+  flex-shrink:0;
+  font-size:20px;
+  color:#C8C0B4;
+}
+
+/* Footer */
+footer {
+  margin-top:40px;
+  font-size:12px;
+  color:#C8C0B4;
+  text-align:center;
+}
+
+@media(min-width:480px){
+  .brand h1 { font-size:52px; }
+  .product-card { padding:28px 26px; }
+  .card-render { width:84px; height:84px; }
+  .card-text h2 { font-size:20px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="brand">
+    <h1>La Caiu</h1>
+    <p class="tagline">tejidos de mohair hechos a mano</p>
+  </div>
+
+  <div class="products">
+
+    <!-- Bufanda -->
+    <a class="product-card card-bufanda" href="/bufanda">
+      <div class="card-inner">
+        <div class="card-render">
+          <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="72" height="72" fill="#86BCC9"/>
+            <rect x="0" y="0" width="72" height="24" fill="#5C3A20"/>
+            <rect x="0" y="24" width="72" height="24" fill="#86BCC9"/>
+            <rect x="0" y="48" width="72" height="24" fill="#5C3A20"/>
+          </svg>
+        </div>
+        <div class="card-text">
+          <h2>Bufanda</h2>
+          <p>2 metros · Diseñá tus colores y franjas</p>
+        </div>
+        <span class="card-arrow">›</span>
+      </div>
+    </a>
+
+    <!-- Sweater -->
+    <a class="product-card card-sweater" href="/sweater">
+      <div class="card-inner">
+        <div class="card-render">
+          <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+            <!-- Manga izq -->
+            <rect x="2" y="18" width="20" height="14" fill="#5C3A20"/>
+            <rect x="2" y="22" width="20" height="4" fill="#D93E03"/>
+            <rect x="2" y="28" width="20" height="4" fill="#D93E03"/>
+            <!-- Manga der -->
+            <rect x="50" y="18" width="20" height="14" fill="#5C3A20"/>
+            <rect x="50" y="22" width="20" height="4" fill="#D93E03"/>
+            <rect x="50" y="28" width="20" height="4" fill="#D93E03"/>
+            <!-- Cuerpo -->
+            <rect x="22" y="14" width="28" height="46" fill="#5C3A20"/>
+            <rect x="22" y="22" width="28" height="8" fill="#86BCC9"/>
+            <rect x="22" y="36" width="28" height="8" fill="#86BCC9"/>
+            <rect x="22" y="50" width="28" height="8" fill="#86BCC9"/>
+            <!-- Cuello calado -->
+            <path d="M28,14 Q36,20 44,14 L44,8 L28,8 Z" fill="#FAF7F2"/>
+            <path d="M28,14 Q36,20 44,14" fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="card-text">
+          <h2>Sweater</h2>
+          <p>Drop shoulder · Torso y mangas independientes</p>
+        </div>
+        <span class="card-arrow">›</span>
+      </div>
+    </a>
+
+  </div>
+
+  <footer>mohair natural · hecho en argentina</footer>
+
+</div>
+</body>
+</html>
