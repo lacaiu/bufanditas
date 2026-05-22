@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#FAF7F2" />
+<title>Diseñá tu sweater!!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body {
+  margin:0; padding:0; background:#FAF7F2; color:#2A2722;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  font-size:15px; line-height:1.45;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  overscroll-behavior-y:contain;
+}
+body { padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+.app { max-width:520px; margin:0 auto; padding:18px 16px 32px; }
+
+header { text-align:center; margin-bottom:18px; }
+h1 { font-size:22px; font-weight:600; margin:0 0 4px; letter-spacing:-0.01em; }
+.subtitle { font-size:13px; color:#7A746C; margin:0; font-weight:400; }
+
+/* Render card — sticky */
+.render-card {
+  background:#FFFFFF; border-radius:18px;
+  padding:16px 14px 14px; margin-bottom:18px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.04);
+  position:sticky; top:8px; z-index:50;
+  transition:padding 0.2s ease, box-shadow 0.2s ease;
+}
+.render-card.compact { padding:8px 10px; box-shadow:0 2px 4px rgba(0,0,0,0.06),0 6px 18px rgba(0,0,0,0.08); }
+.render-card.compact #sw-svg { max-height:70px; }
+.render-card.compact .render-labels { display:none; }
+.render-card.compact .price-bar { margin-top:8px; padding-top:8px; }
+.render-card.compact #price-readout { font-size:22px; }
+.render-card.compact #price-detail { display:none; }
+.render-card.compact .price-label { display:none; }
+.render-card.compact .surprise-btn { padding:7px 12px !important; font-size:12px !important; }
+
+#sw-svg { width:100%; height:auto; display:block; margin:0 auto; cursor:pointer; }
+.render-labels { display:flex; justify-content:space-between; font-size:10px; color:#A8A29A; margin-top:6px; padding:0 2px; font-weight:500; }
+
+.price-bar { display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:14px; border-top:1px solid #EEE9E1; gap:12px; }
+.price-label { font-size:11px; color:#A8A29A; margin-bottom:2px; text-transform:uppercase; letter-spacing:0.06em; font-weight:600; }
+#price-readout { font-size:30px; font-weight:700; line-height:1; color:#2A2722; transition:transform 0.18s ease,color 0.18s ease; letter-spacing:-0.02em; }
+#price-readout.bump { transform:scale(1.06); color:#C9651E; }
+#price-detail { font-size:11px; color:#A8A29A; line-height:1.3; margin-top:4px; }
+
+.surprise-btn {
+  flex-shrink:0; font-size:13px !important; padding:9px 14px !important;
+  border-radius:999px !important; align-self:center;
+}
+
+/* Tabs de sección */
+.sw-tabs { display:flex; gap:6px; margin-bottom:14px; }
+.sw-tab {
+  flex:1; padding:11px 6px; border-radius:12px;
+  border:1.5px solid #E8E2D7; background:#FFFFFF;
+  font-size:13px; font-weight:600; cursor:pointer;
+  color:#7A746C; transition:all 0.15s ease;
+  font-family:inherit; -webkit-appearance:none; appearance:none;
+}
+.sw-tab.active { background:#2A2722; color:#FFFFFF; border-color:#2A2722; }
+
+/* Talla */
+.size-row { display:flex; gap:7px; margin-bottom:18px; }
+.size-btn {
+  flex:1; padding:10px 4px; border-radius:10px;
+  border:1.5px solid #E8E2D7; background:#FFFFFF;
+  font-size:13px; font-weight:600; cursor:pointer; color:#7A746C;
+  font-family:inherit; -webkit-appearance:none; appearance:none;
+  transition:all 0.15s ease;
+}
+.size-btn.active { background:#2A2722; color:#FFFFFF; border-color:#2A2722; }
+
+/* Secciones colapsables */
+section { margin-bottom:18px; }
+section.collapsible .section-head {
+  cursor:pointer; user-select:none;
+  padding:12px 14px; background:#FFFFFF;
+  border:1px solid #EEE9E1; border-radius:12px;
+  margin-bottom:10px; transition:background 0.15s ease;
+  display:flex; align-items:center; justify-content:space-between;
+}
+section.collapsible .section-head:hover { background:#FAF7F2; }
+section.collapsible .section-head label { cursor:pointer; font-size:14px; font-weight:600; color:#2A2722; letter-spacing:-0.005em; }
+.chevron { flex-shrink:0; width:18px; height:18px; transition:transform 0.25s ease; color:#7A746C; display:inline-flex; align-items:center; justify-content:center; }
+section.collapsible.collapsed .chevron { transform:rotate(-90deg); }
+section.collapsible .collapsible-body { overflow:hidden; transition:max-height 0.3s ease,opacity 0.2s ease; max-height:2000px; opacity:1; }
+section.collapsible.collapsed .collapsible-body { max-height:0; opacity:0; }
+.header-right { display:flex; align-items:center; gap:8px; }
+.meta { font-size:12px; color:#7A746C; font-weight:500; }
+.selection-preview { display:none; align-items:center; gap:4px; flex-shrink:0; }
+section.collapsible.collapsed .selection-preview { display:inline-flex; }
+section.collapsible.collapsed .meta-count { display:none; }
+.preview-dot { width:18px; height:18px; border-radius:50%; border:1.5px solid rgba(0,0,0,0.1); flex-shrink:0; }
+
+/* Paleta */
+.palette { display:grid; grid-template-columns:repeat(auto-fill,minmax(38px,1fr)); gap:8px; }
+.swatch {
+  aspect-ratio:1; border-radius:50%; cursor:pointer;
+  border:1.5px solid rgba(0,0,0,0.08);
+  transition:transform 0.15s ease,border-color 0.15s ease,box-shadow 0.15s ease;
+  position:relative; padding:0; outline:none;
+  touch-action:manipulation;
+}
+.swatch:active:not(.oos) { transform:scale(0.94); }
+.swatch.base-sel {
+  border-color:#1E5AA8; border-width:3px; transform:scale(1.14);
+  box-shadow:0 0 0 3px #FAF7F2,0 0 0 5px #1E5AA8,0 2px 12px rgba(30,90,168,0.4); z-index:2;
+}
+.swatch.base-sel::after {
+  content:''; position:absolute; top:50%; left:50%;
+  width:10px; height:10px; margin:-5px 0 0 -5px;
+  border-radius:50%; background:#FFFFFF; box-shadow:0 0 0 1.5px #1E5AA8 inset;
+}
+.swatch.stripe-sel {
+  border-color:#2A2722; border-width:3px; transform:scale(1.1);
+  box-shadow:0 0 0 3px #FAF7F2,0 0 0 5px #2A2722,0 2px 10px rgba(0,0,0,0.3); z-index:2;
+}
+.stripe-num {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  color:#fff; font-size:14px; font-weight:700;
+  text-shadow:0 0 3px rgba(0,0,0,0.95),0 0 2px rgba(0,0,0,0.95);
+  line-height:1; pointer-events:none;
+}
+.swatch.oos { cursor:not-allowed; opacity:0.55; filter:grayscale(0.35); }
+.swatch.oos::before {
+  content:''; position:absolute; top:50%; left:-2px; right:-2px;
+  height:2px; background:rgba(0,0,0,0.7); transform:rotate(-45deg);
+  box-shadow:0 0 0 1px rgba(255,255,255,0.6); pointer-events:none;
+}
+.hint { font-size:12px; color:#A8A29A; margin:0 0 10px; line-height:1.4; }
+
+/* Slider */
+input[type="range"] {
+  -webkit-appearance:none; appearance:none; width:100%; height:4px;
+  border-radius:2px; background:#E8E2D7; outline:none; margin:8px 0 4px; padding:0;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none; appearance:none; width:26px; height:26px;
+  border-radius:50%; background:#FFFFFF; cursor:pointer; border:none;
+  box-shadow:0 1px 4px rgba(0,0,0,0.15),0 0 0 1.5px #2A2722; transition:transform 0.1s ease;
+}
+input[type="range"]::-webkit-slider-thumb:active { transform:scale(1.1); }
+input[type="range"]::-moz-range-thumb { width:26px; height:26px; border-radius:50%; background:#FFFFFF; cursor:pointer; border:1.5px solid #2A2722; }
+.slider-legend { display:flex; justify-content:space-between; font-size:10px; color:#A8A29A; margin-top:4px; font-weight:500; }
+
+/* Botones de acción */
+.action-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.action-row button { font-size:12px; padding:9px 13px; }
+
+/* Botón principal */
+.actions { margin-bottom:14px; }
+button.btn {
+  font-family:inherit; font-size:14px; font-weight:600;
+  padding:13px 14px; border-radius:12px;
+  border:1.5px solid #E8E2D7; background:#FFFFFF; color:#2A2722;
+  cursor:pointer; transition:transform 0.1s ease, background 0.15s ease;
+  touch-action:manipulation; -webkit-appearance:none; appearance:none;
+}
+button.btn:active { transform:scale(0.97); background:#F4EFE4; }
+button.btn.primary { background:#2A2722; color:#FFFFFF; border-color:#2A2722; width:100%; }
+button.btn.primary:active { background:#1A1815; }
+button.btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+.summary { padding:14px; background:#FFFFFF; border:1px solid #EEE9E1; border-radius:14px; font-size:13px; color:#5A544D; line-height:1.5; margin-bottom:22px; }
+
+/* Toast */
+.toast {
+  position:fixed; left:50%; bottom:max(24px,env(safe-area-inset-bottom));
+  transform:translateX(-50%) translateY(120%);
+  background:#2A2722; color:#FFFFFF; padding:12px 18px;
+  border-radius:999px; font-size:13px; font-weight:500;
+  box-shadow:0 8px 24px rgba(0,0,0,0.2);
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  z-index:1000; pointer-events:none; max-width:90vw;
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+/* Modal checkout */
+.modal { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:flex-end; justify-content:center; z-index:999; }
+.modal.show { display:flex; }
+.sheet {
+  background:#FFFFFF; width:100%; max-width:520px;
+  border-radius:20px 20px 0 0;
+  padding:22px 20px max(22px,env(safe-area-inset-bottom));
+  max-height:85vh; overflow-y:auto;
+  animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+.sheet h2 { margin:0 0 6px; font-size:18px; font-weight:700; letter-spacing:-0.01em; }
+.sheet p.lead { margin:0 0 14px; font-size:13px; color:#7A746C; }
+.summary-box { background:#FAF7F2; border-radius:10px; padding:14px; font-size:13px; line-height:1.5; color:#2A2722; margin:0 0 14px; border:1px solid #EEE9E1; }
+.price-row { display:flex; justify-content:space-between; align-items:baseline; margin:14px 0; padding:12px 14px; background:#F4EFE4; border-radius:10px; }
+.price-row .label { font-size:13px; color:#5A544D; }
+.price-row .value { font-size:24px; font-weight:700; color:#2A2722; letter-spacing:-0.01em; }
+.field { margin-bottom:12px; }
+.field label { display:block; font-size:12px; font-weight:600; color:#2A2722; margin-bottom:5px; }
+.field input, .field textarea, .field select {
+  width:100%; padding:11px 12px; border-radius:10px;
+  border:1.5px solid #E8E2D7; background:#FFFFFF;
+  font-family:inherit; font-size:14px; color:#2A2722;
+  -webkit-appearance:none; appearance:none;
+}
+.field input:focus,.field textarea:focus,.field select:focus { outline:none; border-color:#2A2722; }
+.pay-buttons { display:grid; grid-template-columns:1fr; gap:8px; margin-top:6px; }
+.mp-btn { background:#009EE3 !important; color:#FFFFFF !important; border-color:#009EE3 !important; }
+.mp-btn:active { background:#0088C2 !important; }
+.loading-spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,0.3); border-top-color:#FFFFFF; border-radius:50%; animation:spin 0.8s linear infinite; margin-right:8px; vertical-align:-2px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* Carrusel */
+.carousel-section { margin-top:28px; margin-bottom:22px; }
+.carousel { position:relative; border-radius:16px; overflow:hidden; background:#FFFFFF; box-shadow:0 1px 2px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.04); }
+.carousel-track { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.carousel-track::-webkit-scrollbar { display:none; }
+.carousel-slide { flex:0 0 100%; scroll-snap-align:center; aspect-ratio:4/3; background:#F4EFE4; }
+.carousel-slide img { width:100%; height:100%; object-fit:cover; display:block; }
+.carousel-arrow { position:absolute; top:50%; transform:translateY(-50%); width:36px; height:36px; border-radius:50%; border:none; background:rgba(255,255,255,0.92); color:#2A2722; font-size:22px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.18); z-index:2; transition:background 0.15s ease; padding:0; }
+.carousel-arrow.prev { left:10px; }
+.carousel-arrow.next { right:10px; }
+.carousel-dots { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:6px; background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:999px; }
+.carousel-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.5); transition:background 0.15s ease,transform 0.15s ease; cursor:pointer; border:none; padding:0; }
+.carousel-dot.active { background:#FFFFFF; transform:scale(1.3); }
+
+@media(min-width:640px){
+  .app { padding:28px 24px 40px; }
+  h1 { font-size:26px; }
+  .render-card { padding:22px 20px 18px; border-radius:22px; }
+  .palette { grid-template-columns:repeat(auto-fill,minmax(44px,1fr)); gap:10px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Diseñá tu sweater!!</h1>
+    <p class="subtitle">Drop shoulder · Manga larga · Hilado Mohair Natural</p>
+  </header>
+
+  <!-- Render card sticky -->
+  <div class="render-card">
+    <svg id="sw-svg" viewBox="0 0 520 210" preserveAspectRatio="xMidYMid meet" aria-label="Vista previa del sweater">
+      <defs>
+        <clipPath id="cpl"><rect x="10" y="56" width="160" height="52"/></clipPath>
+        <clipPath id="cpr"><rect x="350" y="56" width="160" height="52"/></clipPath>
+        <clipPath id="cpb"><rect x="170" y="56" width="180" height="145"/></clipPath>
+      </defs>
+    </svg>
+    <div class="render-labels">
+      <span>manga izq.</span><span style="text-align:center;flex:1;">torso</span><span>manga der.</span>
+    </div>
+    <div class="price-bar">
+      <div>
+        <div class="price-label">Precio</div>
+        <div id="price-readout">$50.000</div>
+        <div id="price-detail"></div>
+      </div>
+      <button id="randomize-btn" type="button" class="btn surprise-btn">🎲 Sorprendeme...</button>
+    </div>
+  </div>
+
+  <!-- Talla -->
+  <section>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <span style="font-size:14px;font-weight:600;color:#2A2722;">Talla</span>
+      <span id="size-label" style="font-size:12px;color:#7A746C;"></span>
+    </div>
+    <div class="size-row">
+      <button class="size-btn" data-size="XS" type="button">XS</button>
+      <button class="size-btn" data-size="S" type="button">S</button>
+      <button class="size-btn active" data-size="M" type="button">M</button>
+      <button class="size-btn" data-size="L" type="button">L</button>
+      <button class="size-btn" data-size="XL" type="button">XL</button>
+    </div>
+  </section>
+
+  <!-- Tabs de sección en orden del gráfico -->
+  <div class="sw-tabs">
+    <button class="sw-tab active" data-part="left" type="button">Manga izq.</button>
+    <button class="sw-tab" data-part="body" type="button">Torso</button>
+    <button class="sw-tab" data-part="right" type="button">Manga der.</button>
+  </div>
+
+  <!-- Color base -->
+  <section class="collapsible" id="section-base">
+    <div class="section-head" data-toggle="section-base">
+      <label>Color base</label>
+      <div class="header-right">
+        <span class="meta" id="base-name"></span>
+        <span class="selection-preview" id="base-preview"></span>
+        <span class="chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </div>
+    </div>
+    <div class="collapsible-body">
+      <div id="base-palette" class="palette"></div>
+    </div>
+  </section>
+
+  <!-- Colores franjas -->
+  <section class="collapsible" id="section-stripes">
+    <div class="section-head" data-toggle="section-stripes">
+      <label>Colores para franjas</label>
+      <div class="header-right">
+        <span class="meta meta-count"><span id="stripe-count">0</span> elegidos</span>
+        <span class="selection-preview" id="stripe-preview"></span>
+        <span class="chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+      </div>
+    </div>
+    <div class="collapsible-body">
+      <p class="hint">Si no elegís ninguno, la sección queda lisa. Los tachados están sin stock.</p>
+      <div id="stripe-palette" class="palette"></div>
+    </div>
+  </section>
+
+  <!-- Grosor franjas -->
+  <section>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <span style="font-size:14px;font-weight:600;color:#2A2722;">Grosor de franjas</span>
+      <span id="width-out" style="font-size:12px;color:#7A746C;">15 cm</span>
+    </div>
+    <input id="stripe-width" type="range" min="7" max="40" value="15" step="1"/>
+    <div class="slider-legend"><span>Finas (7 cm)</span><span>Gruesas</span></div>
+  </section>
+
+  <!-- Acciones de igualado -->
+  <div class="action-row">
+    <button type="button" class="btn" id="btn-eq-sleeves">Igualar mangas entre sí</button>
+    <button type="button" class="btn" id="btn-eq-body">Igualar mangas al torso</button>
+    <button type="button" class="btn" id="btn-undo">↩ Deshacer</button>
+  </div>
+
+  <!-- Resumen y CTA -->
+  <div class="summary"><span id="summary-text"></span></div>
+  <div class="actions">
+    <button id="checkout-btn" type="button" class="btn primary">Quiero este sweater</button>
+  </div>
+
+  <!-- Carrusel de inspiración -->
+  <section class="carousel-section">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <span style="font-size:14px;font-weight:600;color:#2A2722;">Inspirate!</span>
+    </div>
+    <div class="carousel" id="carousel">
+      <div class="carousel-track" id="carousel-track">
+        <div class="carousel-slide"><img src="img/0001.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
+        <div class="carousel-slide"><img src="img/0002.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
+        <div class="carousel-slide"><img src="img/0003.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
+        <div class="carousel-slide"><img src="img/0004.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
+        <div class="carousel-slide"><img src="img/0005.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
+        <div class="carousel-slide"><img src="img/0006.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
+        <div class="carousel-slide"><img src="img/0007.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
+      </div>
+      <button class="carousel-arrow prev" id="carousel-prev" aria-label="Anterior">‹</button>
+      <button class="carousel-arrow next" id="carousel-next" aria-label="Siguiente">›</button>
+      <div class="carousel-dots" id="carousel-dots"></div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Modal checkout -->
+<div class="modal" id="checkout-modal" role="dialog" aria-modal="true">
+  <div class="sheet" role="document">
+    <h2>Confirmá tu sweater</h2>
+    <p class="lead">Revisá el diseño y completá tus datos para pagar.</p>
+    <div class="summary-box" id="checkout-summary"></div>
+    <div class="price-row">
+      <span class="label">Total a pagar</span>
+      <span class="value" id="checkout-price">$50.000</span>
+    </div>
+    <div class="field">
+      <label for="buyer-name">Tu nombre</label>
+      <input id="buyer-name" type="text" autocomplete="name" placeholder="Nombre y apellido"/>
+    </div>
+    <div class="field">
+      <label for="buyer-email">Email</label>
+      <input id="buyer-email" type="email" autocomplete="email" inputmode="email" placeholder="email@ejemplo.com"/>
+    </div>
+    <div class="field">
+      <label for="buyer-phone">Teléfono / WhatsApp</label>
+      <input id="buyer-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="11 5555 5555"/>
+    </div>
+    <div class="field">
+      <label for="buyer-notes">Notas (opcional)</label>
+      <textarea id="buyer-notes" rows="2" placeholder="Cualquier detalle adicional..."></textarea>
+    </div>
+    <div class="pay-buttons">
+      <button class="btn primary mp-btn" type="button" id="pay-mp">
+        <span id="pay-mp-content">Pagar con Mercado Pago</span>
+      </button>
+      <button class="btn" type="button" id="close-checkout">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal info post-pago -->
+<div class="modal" id="info-modal" role="dialog" aria-modal="true">
+  <div class="sheet" role="document">
+    <h2 id="info-title"></h2>
+    <p class="lead" id="info-text"></p>
+    <div class="pay-buttons">
+      <button class="btn primary" type="button" id="close-info">Entendido</button>
+    </div>
+  </div>
+</div>
+
+<script src="colors.js?v=2"></script>
+<script>
+(function(){
+const COLORS = window.COLORS;
+const colorKey = window.colorKey;
+const API_BASE = '';
+
+const SIZES = ['XS','S','M','L','XL'];
+const THIN_THRESHOLD_CM = 12;
+
+// -------- Estado --------
+const makePart = (baseIdx, stripes, widthCm) => ({baseIdx, stripes:[...stripes], widthCm});
+const clonePart = p => makePart(p.baseIdx, [...p.stripes], p.widthCm);
+const cloneState = s => ({body:clonePart(s.body),left:clonePart(s.left),right:clonePart(s.right),size:s.size});
+
+function randIdx(avoid=[]) {
+  const pool = COLORS.map((_,i)=>i).filter(i=>!avoid.includes(i)&&!isOOS(COLORS[i]));
+  return pool[Math.floor(Math.random()*pool.length)] ?? 0;
+}
+function randPart() {
+  const base = randIdx();
+  const n = Math.random()<0.3?0:1;
+  const stripes = n===0?[]:[randIdx([base])];
+  return makePart(base, stripes, 15);
+}
+
+let state = {body:randPart(),left:randPart(),right:randPart(),size:'M'};
+let history = [];
+let activePart = 'left';
+let outOfStock = new Set();
+
+function isOOS(c){ return outOfStock.has(colorKey(c)); }
+
+// -------- Stock --------
+async function loadStock(){
+  try {
+    const res = await fetch(API_BASE+'/api/stock',{cache:'no-store'});
+    if(res.ok){ const d=await res.json(); if(Array.isArray(d.outOfStock)) outOfStock=new Set(d.outOfStock); }
+  } catch(e) {
+    try { const s=localStorage.getItem('bufandita_stock_out'); if(s) outOfStock=new Set(JSON.parse(s)); } catch(e2){}
+  }
+}
+
+// -------- Precio --------
+function computePrice(){
+  const allColors = new Set();
+  allColors.add(state.body.baseIdx);
+  state.body.stripes.forEach(i=>allColors.add(i));
+  allColors.add(state.left.baseIdx);
+  state.left.stripes.forEach(i=>allColors.add(i));
+  allColors.add(state.right.baseIdx);
+  state.right.stripes.forEach(i=>allColors.add(i));
+
+  const nColors = allColors.size;
+  const base = 50000;
+  const colorExtra = (nColors - 1) * 10000;
+
+  const bodyThin = state.body.stripes.length > 0 && state.body.widthCm < THIN_THRESHOLD_CM;
+  const sleevesThin = (state.left.stripes.length > 0 && state.left.widthCm < THIN_THRESHOLD_CM)
+    || (state.right.stripes.length > 0 && state.right.widthCm < THIN_THRESHOLD_CM);
+  const thinExtra = (bodyThin || sleevesThin) ? 10000 : 0;
+
+  const total = base + colorExtra + thinExtra;
+  const parts = [];
+  if(colorExtra > 0) parts.push(`+$${(colorExtra/1000).toFixed(0)}k por ${nColors} colores`);
+  if(thinExtra > 0) parts.push('+$10k franjas finas');
+  const label = parts.length ? parts.join(' · ') : `${nColors} color${nColors>1?'es':''} · talla ${state.size}`;
+
+  return {price:total, label};
+}
+
+function formatPrice(n){ return '$'+n.toLocaleString('es-AR'); }
+
+let lastPrice = null;
+function updatePrice(){
+  const {price,label} = computePrice();
+  const el = document.getElementById('price-readout');
+  el.textContent = formatPrice(price);
+  document.getElementById('price-detail').textContent = label;
+  if(lastPrice!==null && lastPrice!==price){
+    el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+    setTimeout(()=>el.classList.remove('bump'),220);
+  }
+  lastPrice = price;
+}
+
+// -------- SVG --------
+const ZONES = {
+  left: {x:10,y:56,w:160,h:52},
+  body: {x:170,y:56,w:180,h:145},
+  right:{x:350,y:56,w:160,h:52},
+};
+
+function buildStripes(part, x0, y0, w, h, horizontal){
+  const {baseIdx,stripes,widthCm} = part;
+  const dim = horizontal ? w : h;
+  const pxPerCm = dim / 200;
+  const wPx = Math.max(1, widthCm*pxPerCm);
+  const allColors = [baseIdx,...stripes];
+  const rects=[]; let pos=0,i=0;
+  while(pos<dim){
+    const ci = allColors[i%allColors.length];
+    const end = Math.min(pos+wPx,dim);
+    if(horizontal) rects.push({x:x0+pos,y:y0,w:end-pos,h,hex:COLORS[ci].hex});
+    else rects.push({x:x0,y:y0+pos,w,h:end-pos,hex:COLORS[ci].hex});
+    pos=end; i++;
+  }
+  return rects;
+}
+
+function renderSVG(){
+  const svg = document.getElementById('sw-svg');
+  const lZ=ZONES.left, bZ=ZONES.body, rZ=ZONES.right;
+  let html='';
+
+  // Manga izquierda: franjas VERTICALES
+  buildStripes(state.left,lZ.x,lZ.y,lZ.w,lZ.h,false).forEach(r=>
+    html+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}" clip-path="url(#cpl)"/>`
+  );
+  // Manga derecha: franjas VERTICALES
+  buildStripes(state.right,rZ.x,rZ.y,rZ.w,rZ.h,false).forEach(r=>
+    html+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}" clip-path="url(#cpr)"/>`
+  );
+  // Torso: franjas HORIZONTALES
+  buildStripes(state.body,bZ.x,bZ.y,bZ.w,bZ.h,true).forEach(r=>
+    html+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}" clip-path="url(#cpb)"/>`
+  );
+
+  // Contornos
+  html+=`<rect x="${lZ.x}" y="${lZ.y}" width="${lZ.w}" height="${lZ.h}" fill="none" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>`;
+  html+=`<rect x="${lZ.x}" y="${lZ.y}" width="5" height="${lZ.h}" rx="1" fill="rgba(0,0,0,0.1)"/>`;
+  html+=`<rect x="${rZ.x}" y="${rZ.y}" width="${rZ.w}" height="${rZ.h}" fill="none" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>`;
+  html+=`<rect x="${rZ.x+rZ.w-5}" y="${rZ.y}" width="5" height="${rZ.h}" rx="1" fill="rgba(0,0,0,0.1)"/>`;
+  html+=`<rect x="${bZ.x}" y="${bZ.y}" width="${bZ.w}" height="${bZ.h}" fill="none" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>`;
+
+  // Cuello bote cóncavo calado
+  const nL=200,nR=320,nTop=16,nBot=56;
+  html+=`<path d="M${nL},${nBot} Q260,${nBot+22} ${nR},${nBot} L${nR},${nTop} L${nL},${nTop} Z" fill="var(--color-background-secondary,#FAF7F2)"/>`;
+  html+=`<path d="M${nL},${nBot} Q260,${nBot+22} ${nR},${nBot}" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="2" stroke-linecap="round"/>`;
+  html+=`<line x1="${nL}" y1="${nTop}" x2="${nL}" y2="${nBot}" stroke="rgba(0,0,0,0.12)" stroke-width="1.2"/>`;
+  html+=`<line x1="${nR}" y1="${nTop}" x2="${nR}" y2="${nBot}" stroke="rgba(0,0,0,0.12)" stroke-width="1.2"/>`;
+
+  // Dobladillo
+  html+=`<line x1="${bZ.x}" y1="${bZ.y+bZ.h-3}" x2="${bZ.x+bZ.w}" y2="${bZ.y+bZ.h-3}" stroke="rgba(0,0,0,0.12)" stroke-width="1.5"/>`;
+
+  // Zonas clickeables + resaltado activo
+  Object.entries(ZONES).forEach(([part,z])=>{
+    const active = part===activePart;
+    html+=`<rect data-part="${part}" x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}"
+      fill="transparent"
+      stroke="${active?'rgba(30,90,168,0.75)':'transparent'}"
+      stroke-width="${active?2:0}"
+      stroke-dasharray="${active?'5,3':''}"
+      style="cursor:pointer;"/>`;
+  });
+
+  svg.innerHTML = html;
+
+  svg.querySelectorAll('[data-part]').forEach(el=>{
+    el.addEventListener('click',()=>setActivePart(el.dataset.part));
+  });
+}
+
+// -------- UI helpers --------
+function setActivePart(part){
+  activePart = part;
+  document.querySelectorAll('.sw-tab').forEach(t=>t.classList.toggle('active',t.dataset.part===part));
+  syncSlider(); renderBasePalette(); renderStripePalette(); updateBaseLabel(); renderSVG();
+}
+
+function snapshot(){
+  history.push(cloneState(state));
+  if(history.length>30) history.shift();
+}
+function undo(){
+  if(!history.length) return;
+  const s=history.pop();
+  state.body=s.body; state.left=s.left; state.right=s.right; state.size=s.size;
+  syncSlider(); syncSizeBtns(); renderAll();
+}
+function current(){ return state[activePart]; }
+
+function syncSlider(){
+  const v=current().widthCm;
+  document.getElementById('stripe-width').value=v;
+  document.getElementById('width-out').textContent=v+' cm';
+}
+function syncSizeBtns(){
+  document.querySelectorAll('.size-btn').forEach(b=>b.classList.toggle('active',b.dataset.size===state.size));
+  document.getElementById('size-label').textContent=state.size;
+}
+
+function updateBaseLabel(){
+  document.getElementById('base-name').textContent = COLORS[current().baseIdx].name;
+  const el = document.getElementById('base-preview');
+  if(el) el.innerHTML=`<span class="preview-dot" style="background:${COLORS[current().baseIdx].hex};"></span>`;
+}
+function updateStripePreview(){
+  const el = document.getElementById('stripe-preview');
+  if(!el) return;
+  const shown = current().stripes.slice(0,4);
+  let html = shown.map(i=>`<span class="preview-dot" style="background:${COLORS[i].hex};"></span>`).join('');
+  if(current().stripes.length>4) html+=`<span class="preview-dot" style="background:#F4EFE4;font-size:10px;font-weight:600;color:#5A544D;display:inline-flex;align-items:center;justify-content:center;">+${current().stripes.length-4}</span>`;
+  if(current().stripes.length===0) html=`<span class="meta" style="display:inline;">ninguno</span>`;
+  el.innerHTML=html;
+}
+
+function renderBasePalette(){
+  const c=document.getElementById('base-palette');
+  c.innerHTML='';
+  const part=current();
+  COLORS.forEach((col,i)=>{
+    const btn=document.createElement('button');
+    btn.type='button'; btn.className='swatch';
+    btn.style.background=col.hex; btn.title=col.name;
+    const oos=isOOS(col);
+    if(oos){btn.classList.add('oos');btn.disabled=true;btn.title=col.name+' (sin stock)';}
+    if(i===part.baseIdx) btn.classList.add('base-sel');
+    if(!oos) btn.addEventListener('click',()=>{
+      snapshot(); current().baseIdx=i;
+      renderBasePalette(); updateBaseLabel(); renderSVG(); updateSummary(); updatePrice();
+    });
+    c.appendChild(btn);
+  });
+  updateBaseLabel();
+}
+
+function renderStripePalette(){
+  const c=document.getElementById('stripe-palette');
+  c.innerHTML='';
+  const part=current();
+  COLORS.forEach((col,i)=>{
+    const btn=document.createElement('button');
+    btn.type='button'; btn.className='swatch';
+    btn.style.background=col.hex; btn.title=col.name;
+    const oos=isOOS(col);
+    if(oos){btn.classList.add('oos');btn.disabled=true;}
+    const pos=part.stripes.indexOf(i);
+    if(pos>=0){
+      btn.classList.add('stripe-sel');
+      const sp=document.createElement('span');
+      sp.className='stripe-num'; sp.textContent=(pos+1).toString();
+      btn.appendChild(sp);
+    }
+    if(!oos) btn.addEventListener('click',()=>{
+      snapshot();
+      const idx=current().stripes.indexOf(i);
+      if(idx>=0) current().stripes.splice(idx,1);
+      else current().stripes.push(i);
+      renderStripePalette(); updateStripePreview(); renderSVG(); updateSummary(); updatePrice();
+      document.getElementById('stripe-count').textContent=current().stripes.length;
+    });
+    c.appendChild(btn);
+  });
+  document.getElementById('stripe-count').textContent=part.stripes.length;
+  updateStripePreview();
+}
+
+function updateSummary(){
+  const bodyBase = COLORS[state.body.baseIdx].name;
+  const leftBase = COLORS[state.left.baseIdx].name;
+  const rightBase = COLORS[state.right.baseIdx].name;
+  const bodyStripes = state.body.stripes.map(i=>COLORS[i].name).join(', ');
+  const leftStripes = state.left.stripes.map(i=>COLORS[i].name).join(', ');
+  const rightStripes = state.right.stripes.map(i=>COLORS[i].name).join(', ');
+  let txt = `Talla ${state.size} · `;
+  txt += `Torso: ${bodyBase}${bodyStripes?`, franjas de ${bodyStripes} (${state.body.widthCm} cm)`:' liso'}. `;
+  txt += `Manga izq.: ${leftBase}${leftStripes?`, franjas de ${leftStripes} (${state.left.widthCm} cm)`:' lisa'}. `;
+  txt += `Manga der.: ${rightBase}${rightStripes?`, franjas de ${rightStripes} (${state.right.widthCm} cm)`:' lisa'}.`;
+  document.getElementById('summary-text').textContent=txt;
+}
+
+function buildDesignPayload(){
+  const {price} = computePrice();
+  const partDetail = part=>({
+    base:{...COLORS[part.baseIdx]},
+    stripes:part.stripes.map(i=>({...COLORS[i]})),
+    widthCm:part.widthCm,
+  });
+  return {
+    type:'sweater', size:state.size,
+    body:partDetail(state.body),
+    leftSleeve:partDetail(state.left),
+    rightSleeve:partDetail(state.right),
+    price, summaryText:document.getElementById('summary-text').textContent,
+    fullText:buildFullText(),
+  };
+}
+
+function buildFullText(){
+  const {price}=computePrice();
+  const fn=c=>(c.code?`${c.code} ${c.name}`:c.name);
+  const partTxt=(p,label)=>{
+    const base=fn(COLORS[p.baseIdx]);
+    const stripes=p.stripes.map(i=>fn(COLORS[i]));
+    return `${label}: base ${base}${stripes.length?`, franjas de ${stripes.join(', ')} (${p.widthCm} cm)`:' lisa'}`;
+  };
+  return `Sweater talla ${state.size}. ${partTxt(state.body,'Torso')}. ${partTxt(state.left,'Manga izq.')}. ${partTxt(state.right,'Manga der.')}. Precio: ${formatPrice(price)}.`;
+}
+
+// -------- Render imagen para email --------
+async function renderSweaterToPNG(){
+  const bZ=ZONES.body, lZ=ZONES.left, rZ=ZONES.right;
+  let svgContent='';
+  buildStripes(state.left,lZ.x,lZ.y,lZ.w,lZ.h,false).forEach(r=>
+    svgContent+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}"/>`
+  );
+  buildStripes(state.right,rZ.x,rZ.y,rZ.w,rZ.h,false).forEach(r=>
+    svgContent+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}"/>`
+  );
+  buildStripes(state.body,bZ.x,bZ.y,bZ.w,bZ.h,true).forEach(r=>
+    svgContent+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}"/>`
+  );
+  svgContent+=`<rect x="${lZ.x}" y="${lZ.y}" width="${lZ.w}" height="${lZ.h}" fill="none" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>`;
+  svgContent+=`<rect x="${rZ.x}" y="${rZ.y}" width="${rZ.w}" height="${rZ.h}" fill="none" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>`;
+  svgContent+=`<rect x="${bZ.x}" y="${bZ.y}" width="${bZ.w}" height="${bZ.h}" fill="none" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>`;
+  const nL=200,nR=320,nTop=16,nBot=56;
+  svgContent+=`<path d="M${nL},${nBot} Q260,${nBot+22} ${nR},${nBot} L${nR},${nTop} L${nL},${nTop} Z" fill="#FFFFFF"/>`;
+  svgContent+=`<path d="M${nL},${nBot} Q260,${nBot+22} ${nR},${nBot}" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="2" stroke-linecap="round"/>`;
+  const svgStr=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 210" width="520" height="210">${svgContent}</svg>`;
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    const blob=new Blob([svgStr],{type:'image/svg+xml;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      canvas.width=520; canvas.height=210;
+      const ctx=canvas.getContext('2d');
+      ctx.fillStyle='#FFFFFF'; ctx.fillRect(0,0,520,210);
+      ctx.drawImage(img,0,0);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg',0.9));
+    };
+    img.onerror=e=>{URL.revokeObjectURL(url);reject(e);};
+    img.src=url;
+  });
+}
+
+// -------- Sorprendeme --------
+function randomize(){
+  snapshot();
+  state.body=randPart(); state.left=randPart(); state.right=randPart();
+  const r=Math.random();
+  if(r<0.35) state.left=clonePart(state.right);
+  else if(r<0.55) { state.left=clonePart(state.body); state.right=clonePart(state.body); }
+  syncSlider(); renderAll();
+}
+
+// -------- Checkout --------
+function openCheckout(){
+  document.getElementById('checkout-summary').textContent=document.getElementById('summary-text').textContent;
+  document.getElementById('checkout-price').textContent=formatPrice(computePrice().price);
+  document.getElementById('checkout-modal').classList.add('show');
+}
+function closeCheckout(){ document.getElementById('checkout-modal').classList.remove('show'); }
+
+async function payWithMP(){
+  const name=document.getElementById('buyer-name').value.trim();
+  const email=document.getElementById('buyer-email').value.trim();
+  const phone=document.getElementById('buyer-phone').value.trim();
+  const notes=document.getElementById('buyer-notes').value.trim();
+  if(!name||!email){showToast('Completá nombre y email');return;}
+  const btn=document.getElementById('pay-mp');
+  const content=document.getElementById('pay-mp-content');
+  btn.disabled=true;
+  content.innerHTML='<span class="loading-spinner"></span>Generando link de pago...';
+  try{
+    const design=buildDesignPayload();
+    let previewImage=null;
+    try{previewImage=await renderSweaterToPNG();}catch(e){console.warn(e);}
+    const res=await fetch(API_BASE+'/api/create-payment',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({buyer:{name,email,phone,notes},design,previewImage}),
+    });
+    if(!res.ok) throw new Error('Backend error '+res.status);
+    const data=await res.json();
+    if(!data.init_point) throw new Error('Missing init_point');
+    window.location.href=data.init_point;
+  }catch(err){
+    btn.disabled=false;
+    content.textContent='Pagar con Mercado Pago';
+    console.error(err);
+    showInfo('No pudimos generar el link','Hubo un problema al conectar con Mercado Pago. Por favor escribinos por WhatsApp con el detalle de tu diseño.');
+  }
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+function showInfo(title,text){
+  document.getElementById('info-title').textContent=title;
+  document.getElementById('info-text').textContent=text;
+  document.getElementById('info-modal').classList.add('show');
+}
+
+// -------- Colapsables --------
+function setupCollapsibles(){
+  document.querySelectorAll('section.collapsible .section-head').forEach(head=>{
+    head.addEventListener('click',()=>head.closest('section.collapsible').classList.toggle('collapsed'));
+  });
+}
+
+// -------- Sticky card --------
+function setupStickyCard(){
+  const card=document.querySelector('.render-card');
+  if(!card) return;
+  let lastStuck=false;
+  const onScroll=()=>{
+    const stuck=card.getBoundingClientRect().top<=12&&window.scrollY>20;
+    if(stuck!==lastStuck){card.classList.toggle('compact',stuck);lastStuck=stuck;}
+  };
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+}
+
+// -------- Carrusel --------
+function setupCarousel(){
+  const track=document.getElementById('carousel-track');
+  const slides=track.querySelectorAll('.carousel-slide');
+  const dotsContainer=document.getElementById('carousel-dots');
+  if(!track||slides.length===0) return;
+  slides.forEach((_,i)=>{
+    const dot=document.createElement('button');
+    dot.className='carousel-dot'+(i===0?' active':'');
+    dot.setAttribute('aria-label',`Ir a foto ${i+1}`);
+    dot.addEventListener('click',()=>goTo(i));
+    dotsContainer.appendChild(dot);
+  });
+  const dots=dotsContainer.querySelectorAll('.carousel-dot');
+  let cur=0; let timer=null;
+  function goTo(idx){
+    cur=(idx+slides.length)%slides.length;
+    track.scrollTo({left:track.clientWidth*cur,behavior:'smooth'});
+    dots.forEach((d,i)=>d.classList.toggle('active',i===cur));
+    clearInterval(timer); timer=setInterval(()=>goTo(cur+1),4500);
+  }
+  let scrollT;
+  track.addEventListener('scroll',()=>{
+    clearTimeout(scrollT);
+    scrollT=setTimeout(()=>{
+      const idx=Math.round(track.scrollLeft/track.clientWidth);
+      if(idx!==cur){cur=idx;dots.forEach((d,i)=>d.classList.toggle('active',i===cur));}
+    },80);
+  },{passive:true});
+  document.getElementById('carousel-prev').addEventListener('click',()=>goTo(cur-1));
+  document.getElementById('carousel-next').addEventListener('click',()=>goTo(cur+1));
+  track.addEventListener('touchstart',()=>clearInterval(timer),{passive:true});
+  track.addEventListener('mouseenter',()=>clearInterval(timer));
+  track.addEventListener('mouseleave',()=>{timer=setInterval(()=>goTo(cur+1),4500);});
+  timer=setInterval(()=>goTo(cur+1),4500);
+}
+
+// -------- Render general --------
+function renderAll(){
+  renderSVG(); renderBasePalette(); renderStripePalette();
+  syncSlider(); syncSizeBtns(); updateSummary(); updatePrice();
+}
+
+// -------- Eventos --------
+document.querySelectorAll('.sw-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>setActivePart(tab.dataset.part));
+});
+document.querySelectorAll('.size-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    snapshot(); state.size=btn.dataset.size;
+    syncSizeBtns(); updateSummary(); updatePrice();
+  });
+});
+document.getElementById('stripe-width').addEventListener('input',e=>{
+  const v=parseInt(e.target.value,10);
+  document.getElementById('width-out').textContent=v+' cm';
+  current().widthCm=v;
+  renderSVG(); updateSummary(); updatePrice();
+});
+document.getElementById('btn-eq-sleeves').addEventListener('click',()=>{
+  snapshot();
+  const src=activePart==='right'?state.right:state.left;
+  state.left=clonePart(src); state.right=clonePart(src);
+  renderAll();
+});
+document.getElementById('btn-eq-body').addEventListener('click',()=>{
+  snapshot();
+  state.left=clonePart(state.body); state.right=clonePart(state.body);
+  renderAll();
+});
+document.getElementById('btn-undo').addEventListener('click',undo);
+document.getElementById('randomize-btn').addEventListener('click',randomize);
+document.getElementById('checkout-btn').addEventListener('click',openCheckout);
+document.getElementById('close-checkout').addEventListener('click',closeCheckout);
+document.getElementById('checkout-modal').addEventListener('click',e=>{if(e.target.id==='checkout-modal')closeCheckout();});
+document.getElementById('close-info').addEventListener('click',()=>document.getElementById('info-modal').classList.remove('show'));
+document.getElementById('pay-mp').addEventListener('click',payWithMP);
+
+const urlParams=new URLSearchParams(window.location.search);
+if(urlParams.has('status')){
+  const msgs={approved:['¡Pago recibido!','Nos llegó tu pago y el detalle de tu sweater. Te contactamos pronto con la fecha de entrega.'],pending:['Pago pendiente','Tu pago quedó pendiente de acreditación. Te avisamos cuando se confirme.'],failure:['No se completó el pago','El pago no pudo procesarse. Podés volver a intentarlo o contactarnos.']};
+  const m=msgs[urlParams.get('status')]||['Estado de pago',urlParams.get('status')];
+  showInfo(m[0],m[1]);
+  window.history.replaceState({},'',window.location.pathname);
+}
+
+loadStock().then(()=>{
+  renderAll();
+  setupCollapsibles();
+  setupStickyCard();
+  setupCarousel();
+});
+})();
+</script>
+</body>
+</html>
