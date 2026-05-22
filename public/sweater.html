@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="theme-color" content="#FAF7F2" />
-<title> Diseñá tu buzito!!</title>
+<title>Diseñá tu buzito!!</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -246,11 +246,6 @@ button.btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
   <!-- Render card sticky -->
   <div class="render-card">
     <svg id="sw-svg" viewBox="0 0 520 210" preserveAspectRatio="xMidYMid meet" aria-label="Vista previa del sweater">
-      <defs>
-        <clipPath id="cpl"><rect x="10" y="56" width="160" height="52"/></clipPath>
-        <clipPath id="cpr"><rect x="350" y="56" width="160" height="52"/></clipPath>
-        <clipPath id="cpb"><rect x="170" y="56" width="180" height="145"/></clipPath>
-      </defs>
     </svg>
     <div class="render-labels">
       <span>manga izq.</span><span style="text-align:center;flex:1;">torso</span><span>manga der.</span>
@@ -524,7 +519,14 @@ function buildStripes(part, x0, y0, w, h, horizontal){
 function renderSVG(){
   const svg = document.getElementById('sw-svg');
   const lZ=ZONES.left, bZ=ZONES.body, rZ=ZONES.right;
-  let html='';
+
+  // Los defs con clipPath deben regenerarse en cada render porque
+  // svg.innerHTML los borra cuando se reemplaza el contenido.
+  let html = `<defs>
+    <clipPath id="cpl"><rect x="${lZ.x}" y="${lZ.y}" width="${lZ.w}" height="${lZ.h}"/></clipPath>
+    <clipPath id="cpr"><rect x="${rZ.x}" y="${rZ.y}" width="${rZ.w}" height="${rZ.h}"/></clipPath>
+    <clipPath id="cpb"><rect x="${bZ.x}" y="${bZ.y}" width="${bZ.w}" height="${bZ.h}"/></clipPath>
+  </defs>`;
 
   // Manga izquierda: franjas VERTICALES
   buildStripes(state.left,lZ.x,lZ.y,lZ.w,lZ.h,false).forEach(r=>
@@ -548,7 +550,7 @@ function renderSVG(){
 
   // Cuello bote cóncavo calado
   const nL=200,nR=320,nTop=16,nBot=56;
-  html+=`<path d="M${nL},${nBot} Q260,${nBot+22} ${nR},${nBot} L${nR},${nTop} L${nL},${nTop} Z" fill="var(--color-background-secondary,#FAF7F2)"/>`;
+  html+=`<path d="M${nL},${nBot} Q260,${nBot+22} ${nR},${nBot} L${nR},${nTop} L${nL},${nTop} Z" fill="#FAF7F2"/>`;
   html+=`<path d="M${nL},${nBot} Q260,${nBot+22} ${nR},${nBot}" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="2" stroke-linecap="round"/>`;
   html+=`<line x1="${nL}" y1="${nTop}" x2="${nL}" y2="${nBot}" stroke="rgba(0,0,0,0.12)" stroke-width="1.2"/>`;
   html+=`<line x1="${nR}" y1="${nTop}" x2="${nR}" y2="${nBot}" stroke="rgba(0,0,0,0.12)" stroke-width="1.2"/>`;
@@ -714,15 +716,19 @@ function buildFullText(){
 // -------- Render imagen para email --------
 async function renderSweaterToPNG(){
   const bZ=ZONES.body, lZ=ZONES.left, rZ=ZONES.right;
-  let svgContent='';
+  let svgContent=`<defs>
+    <clipPath id="cpl2"><rect x="${lZ.x}" y="${lZ.y}" width="${lZ.w}" height="${lZ.h}"/></clipPath>
+    <clipPath id="cpr2"><rect x="${rZ.x}" y="${rZ.y}" width="${rZ.w}" height="${rZ.h}"/></clipPath>
+    <clipPath id="cpb2"><rect x="${bZ.x}" y="${bZ.y}" width="${bZ.w}" height="${bZ.h}"/></clipPath>
+  </defs>`;
   buildStripes(state.left,lZ.x,lZ.y,lZ.w,lZ.h,false).forEach(r=>
-    svgContent+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}"/>`
+    svgContent+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}" clip-path="url(#cpl2)"/>`
   );
   buildStripes(state.right,rZ.x,rZ.y,rZ.w,rZ.h,false).forEach(r=>
-    svgContent+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}"/>`
+    svgContent+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}" clip-path="url(#cpr2)"/>`
   );
   buildStripes(state.body,bZ.x,bZ.y,bZ.w,bZ.h,true).forEach(r=>
-    svgContent+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}"/>`
+    svgContent+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}" clip-path="url(#cpb2)"/>`
   );
   svgContent+=`<rect x="${lZ.x}" y="${lZ.y}" width="${lZ.w}" height="${lZ.h}" fill="none" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>`;
   svgContent+=`<rect x="${rZ.x}" y="${rZ.y}" width="${rZ.w}" height="${rZ.h}" fill="none" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>`;
