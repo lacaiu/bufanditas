@@ -30,15 +30,18 @@ h1 { font-size:22px; font-weight:600; margin:0 0 4px; letter-spacing:-0.01em; }
   padding:16px 14px 14px; margin-bottom:18px;
   box-shadow:0 1px 2px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.04);
   position:sticky; top:8px; z-index:50;
-  transition:padding 0.2s ease, box-shadow 0.2s ease;
+  transition:box-shadow 0.2s ease;
+  /* Altura fija para que al compactarse no mueva el contenido debajo */
+  will-change: transform;
 }
-.render-card.compact { padding:8px 10px; box-shadow:0 2px 4px rgba(0,0,0,0.06),0 6px 18px rgba(0,0,0,0.08); }
-.render-card.compact #sw-svg { max-height:70px; }
-.render-card.compact .render-labels { display:none; }
-.render-card.compact .price-bar { margin-top:8px; padding-top:8px; }
+/* El modo compact NO cambia el alto total de la card — solo oculta elementos internos */
+.render-card.compact { box-shadow:0 2px 4px rgba(0,0,0,0.06),0 6px 18px rgba(0,0,0,0.08); }
+.render-card.compact #sw-svg { max-height:50px; transition: max-height 0.2s ease; }
+.render-card.compact .render-labels { visibility:hidden; height:0; overflow:hidden; margin:0; }
+.render-card.compact .price-bar { margin-top:6px; padding-top:6px; }
 .render-card.compact #price-readout { font-size:22px; }
-.render-card.compact #price-detail { display:none; }
-.render-card.compact .price-label { display:none; }
+.render-card.compact #price-detail { visibility:hidden; height:0; overflow:hidden; margin:0; }
+.render-card.compact .price-label { visibility:hidden; height:0; overflow:hidden; margin:0; }
 .render-card.compact .surprise-btn { padding:7px 12px !important; font-size:12px !important; }
 
 #sw-svg { width:100%; height:auto; display:block; margin:0 auto; cursor:pointer; }
@@ -240,7 +243,7 @@ button.btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 <div class="app">
   <header>
     <a href="/" style="display:inline-flex;align-items:center;gap:4px;font-size:13px;color:#A8A29A;text-decoration:none;margin-bottom:12px;">← La Caiu</a>
-    <h1>Diseñá tu sweater!!</h1>
+    <h1>Diseñá tu buzito!!</h1>
     <p class="subtitle">Drop shoulder · Manga larga · Hilado Mohair Natural</p>
   </header>
 
@@ -334,7 +337,7 @@ button.btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
   <!-- Resumen y CTA -->
   <div class="summary"><span id="summary-text"></span></div>
   <div class="actions">
-    <button id="checkout-btn" type="button" class="btn primary">Quiero este sweater</button>
+    <button id="checkout-btn" type="button" class="btn primary">Quiero este buzito</button>
   </div>
 
   <!-- Carrusel de inspiración -->
@@ -364,7 +367,7 @@ button.btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 <!-- Modal checkout -->
 <div class="modal" id="checkout-modal" role="dialog" aria-modal="true">
   <div class="sheet" role="document">
-    <h2>Confirmá tu sweater</h2>
+    <h2>Confirmá tu buzito</h2>
     <p class="lead">Revisá el diseño y completá tus datos para pagar.</p>
     <div class="summary-box" id="checkout-summary"></div>
     <div class="price-row">
@@ -863,14 +866,24 @@ function setupCollapsibles(){
 
 // -------- Sticky card --------
 function setupStickyCard(){
-  const card=document.querySelector('.render-card');
+  const card = document.querySelector('.render-card');
   if(!card) return;
-  let lastStuck=false;
-  const onScroll=()=>{
-    const stuck=card.getBoundingClientRect().top<=12&&window.scrollY>20;
-    if(stuck!==lastStuck){card.classList.toggle('compact',stuck);lastStuck=stuck;}
+  let lastStuck = false;
+  let ticking = false;
+  const onScroll = () => {
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      // Umbral de 60px: no entra en compact hasta que scrolleaste bastante
+      const stuck = window.scrollY > 60;
+      if(stuck !== lastStuck){
+        card.classList.toggle('compact', stuck);
+        lastStuck = stuck;
+      }
+      ticking = false;
+    });
   };
-  window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('scroll', onScroll, {passive:true});
   onScroll();
 }
 
@@ -954,7 +967,7 @@ document.getElementById('pay-mp').addEventListener('click',payWithMP);
 
 const urlParams=new URLSearchParams(window.location.search);
 if(urlParams.has('status')){
-  const msgs={approved:['¡Pago recibido!','Nos llegó tu pago y el detalle de tu sweater. Te contactamos pronto con la fecha de entrega.'],pending:['Pago pendiente','Tu pago quedó pendiente de acreditación. Te avisamos cuando se confirme.'],failure:['No se completó el pago','El pago no pudo procesarse. Podés volver a intentarlo o contactarnos.']};
+  const msgs={approved:['¡Pago recibido!','Nos llegó tu pago y el detalle de tu buzito. Te contactamos pronto con la fecha de entrega.'],pending:['Pago pendiente','Tu pago quedó pendiente de acreditación. Te avisamos cuando se confirme.'],failure:['No se completó el pago','El pago no pudo procesarse. Podés volver a intentarlo o contactarnos.']};
   const m=msgs[urlParams.get('status')]||['Estado de pago',urlParams.get('status')];
   showInfo(m[0],m[1]);
   window.history.replaceState({},'',window.location.pathname);
