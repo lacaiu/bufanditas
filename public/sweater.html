@@ -449,13 +449,14 @@ window.colorKey = (c) => `${c.code}|${c.name}`;
 <script>
 (function(){
 const COLORS = window.COLORS;
-const colorKey = window.colorKey;
+const colorKey = window.colorKey || ((c) => `${c.code}|${c.name}`);
 const API_BASE = '';
 
 const SIZES = ['XS','S','M','L','XL'];
 const THIN_THRESHOLD_CM = 12;
 
-// -------- Estado --------
+// outOfStock debe declararse ANTES de randIdx que lo usa
+let outOfStock = new Set();
 const makePart = (baseIdx, stripes, widthCm) => ({baseIdx, stripes:[...stripes], widthCm});
 const clonePart = p => makePart(p.baseIdx, [...p.stripes], p.widthCm);
 const cloneState = s => ({body:clonePart(s.body),left:clonePart(s.left),right:clonePart(s.right),size:s.size});
@@ -474,7 +475,6 @@ function randPart() {
 let state = {body:randPart(),left:randPart(),right:randPart(),size:'M'};
 let history = [];
 let activePart = 'left';
-let outOfStock = new Set();
 
 function isOOS(c){ return outOfStock.has(colorKey(c)); }
 
