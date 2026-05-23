@@ -568,15 +568,15 @@ function renderSVG(){
   </defs>`;
 
   // Manga izquierda: franjas VERTICALES
-  buildStripes(state.left,lZ.x,lZ.y,lZ.w,lZ.h,false).forEach(r=>
+  buildStripes(state.left,lZ.x,lZ.y,lZ.w,lZ.h,true).forEach(r=>
     html+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}" clip-path="url(#cpl)"/>`
   );
   // Manga derecha: franjas VERTICALES
-  buildStripes(state.right,rZ.x,rZ.y,rZ.w,rZ.h,false).forEach(r=>
+  buildStripes(state.right,rZ.x,rZ.y,rZ.w,rZ.h,true).forEach(r=>
     html+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}" clip-path="url(#cpr)"/>`
   );
   // Torso: franjas HORIZONTALES
-  buildStripes(state.body,bZ.x,bZ.y,bZ.w,bZ.h,true).forEach(r=>
+  buildStripes(state.body,bZ.x,bZ.y,bZ.w,bZ.h,false).forEach(r=>
     html+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}" clip-path="url(#cpb)"/>`
   );
 
@@ -760,13 +760,13 @@ async function renderSweaterToPNG(){
     <clipPath id="cpr2"><rect x="${rZ.x}" y="${rZ.y}" width="${rZ.w}" height="${rZ.h}"/></clipPath>
     <clipPath id="cpb2"><rect x="${bZ.x}" y="${bZ.y}" width="${bZ.w}" height="${bZ.h}"/></clipPath>
   </defs>`;
-  buildStripes(state.left,lZ.x,lZ.y,lZ.w,lZ.h,false).forEach(r=>
+  buildStripes(state.left,lZ.x,lZ.y,lZ.w,lZ.h,true).forEach(r=>
     svgContent+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}" clip-path="url(#cpl2)"/>`
   );
-  buildStripes(state.right,rZ.x,rZ.y,rZ.w,rZ.h,false).forEach(r=>
+  buildStripes(state.right,rZ.x,rZ.y,rZ.w,rZ.h,true).forEach(r=>
     svgContent+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}" clip-path="url(#cpr2)"/>`
   );
-  buildStripes(state.body,bZ.x,bZ.y,bZ.w,bZ.h,true).forEach(r=>
+  buildStripes(state.body,bZ.x,bZ.y,bZ.w,bZ.h,false).forEach(r=>
     svgContent+=`<rect x="${r.x.toFixed(1)}" y="${r.y.toFixed(1)}" width="${r.w.toFixed(1)}" height="${r.h.toFixed(1)}" fill="${r.hex}" clip-path="url(#cpb2)"/>`
   );
   svgContent+=`<rect x="${lZ.x}" y="${lZ.y}" width="${lZ.w}" height="${lZ.h}" fill="none" stroke="rgba(0,0,0,0.13)" stroke-width="1.2"/>`;
