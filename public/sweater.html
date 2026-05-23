@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="theme-color" content="#FAF7F2" />
-<title>Diseñá tu buzito!!</title>
+<title>Diseñá tu sweater!!</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -243,7 +243,7 @@ button.btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 <div class="app">
   <header>
     <a href="/" style="display:inline-flex;align-items:center;gap:4px;font-size:13px;color:#A8A29A;text-decoration:none;margin-bottom:12px;">← La Caiu</a>
-    <h1>Diseñá tu buzito!!</h1>
+    <h1>Diseñá tu sweater!!</h1>
     <p class="subtitle">Drop shoulder · Manga larga · Hilado Mohair Natural</p>
   </header>
 
@@ -337,7 +337,7 @@ button.btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
   <!-- Resumen y CTA -->
   <div class="summary"><span id="summary-text"></span></div>
   <div class="actions">
-    <button id="checkout-btn" type="button" class="btn primary">Quiero este buzito</button>
+    <button id="checkout-btn" type="button" class="btn primary">Quiero este sweater</button>
   </div>
 
   <!-- Carrusel de inspiración -->
@@ -347,13 +347,11 @@ button.btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
     </div>
     <div class="carousel" id="carousel">
       <div class="carousel-track" id="carousel-track">
-        <div class="carousel-slide"><img src="img/0001.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
-        <div class="carousel-slide"><img src="img/0002.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
-        <div class="carousel-slide"><img src="img/0003.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
-        <div class="carousel-slide"><img src="img/0004.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
-        <div class="carousel-slide"><img src="img/0005.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
-        <div class="carousel-slide"><img src="img/0006.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
-        <div class="carousel-slide"><img src="img/0007.jpg" alt="Bufanda de mohair" loading="lazy"/></div>
+        <div class="carousel-slide"><img src="img/sweater/sw01.jpg" alt="Sweater de mohair" loading="lazy"/></div>
+        <div class="carousel-slide"><img src="img/sweater/sw02.jpg" alt="Sweater de mohair" loading="lazy"/></div>
+        <div class="carousel-slide"><img src="img/sweater/sw03.jpg" alt="Sweater de mohair" loading="lazy"/></div>
+        <div class="carousel-slide"><img src="img/sweater/sw04.jpg" alt="Sweater de mohair" loading="lazy"/></div>
+        <div class="carousel-slide"><img src="img/sweater/sw05.jpg" alt="Sweater de mohair" loading="lazy"/></div>
       </div>
       <button class="carousel-arrow prev" id="carousel-prev" aria-label="Anterior">‹</button>
       <button class="carousel-arrow next" id="carousel-next" aria-label="Siguiente">›</button>
@@ -367,7 +365,7 @@ button.btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 <!-- Modal checkout -->
 <div class="modal" id="checkout-modal" role="dialog" aria-modal="true">
   <div class="sheet" role="document">
-    <h2>Confirmá tu buzito</h2>
+    <h2>Confirmá tu sweater</h2>
     <p class="lead">Revisá el diseño y completá tus datos para pagar.</p>
     <div class="summary-box" id="checkout-summary"></div>
     <div class="price-row">
@@ -511,10 +509,7 @@ function computePrice(){
   const thinExtra = (bodyThin || sleevesThin) ? 10000 : 0;
 
   const total = base + colorExtra + thinExtra;
-  const parts = [];
-  if(colorExtra > 0) parts.push(`+$${(colorExtra/1000).toFixed(0)}k por ${nColors} colores`);
-  if(thinExtra > 0) parts.push('+$10k franjas finas');
-  const label = parts.length ? parts.join(' · ') : `${nColors} color${nColors>1?'es':''} · talla ${state.size}`;
+  const label = `${nColors} color${nColors>1?'es':''} · talla ${state.size}`;
 
   return {price:total, label};
 }
@@ -967,7 +962,7 @@ document.getElementById('pay-mp').addEventListener('click',payWithMP);
 
 const urlParams=new URLSearchParams(window.location.search);
 if(urlParams.has('status')){
-  const msgs={approved:['¡Pago recibido!','Nos llegó tu pago y el detalle de tu buzito. Te contactamos pronto con la fecha de entrega.'],pending:['Pago pendiente','Tu pago quedó pendiente de acreditación. Te avisamos cuando se confirme.'],failure:['No se completó el pago','El pago no pudo procesarse. Podés volver a intentarlo o contactarnos.']};
+  const msgs={approved:['¡Pago recibido!','Nos llegó tu pago y el detalle de tu sweater. Te contactamos pronto con la fecha de entrega.'],pending:['Pago pendiente','Tu pago quedó pendiente de acreditación. Te avisamos cuando se confirme.'],failure:['No se completó el pago','El pago no pudo procesarse. Podés volver a intentarlo o contactarnos.']};
   const m=msgs[urlParams.get('status')]||['Estado de pago',urlParams.get('status')];
   showInfo(m[0],m[1]);
   window.history.replaceState({},'',window.location.pathname);
